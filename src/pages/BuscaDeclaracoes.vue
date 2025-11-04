@@ -5,7 +5,9 @@
         <div class="row">
           <div class="col-12 text-center mb-5">
             <h2 class="section-title">Buscar Declaração</h2>
-            <p class="section-subtitle">Encontre sua declaração pelo nome, curso ou código de verificação</p>
+            <p class="section-subtitle">
+              Encontre sua declaração pelo nome, curso ou código de verificação
+            </p>
           </div>
         </div>
         <div class="row justify-content-center">
@@ -16,13 +18,13 @@
                   <div class="input-icon">
                     <i class="bi bi-search"></i>
                   </div>
-                  <input 
-                    type="text" 
-                    v-model="searchQuery" 
+                  <input
+                    type="text"
+                    v-model="searchQuery"
                     @input="filterDeclaracoes"
-                    class="form-control search-input" 
+                    class="form-control search-input"
                     placeholder="Digite o nome do aluno, curso ou código da declaração..."
-                  >
+                  />
                   <button @click="clearSearch" class="clear-btn" v-if="searchQuery">
                     <i class="bi bi-x"></i>
                   </button>
@@ -60,6 +62,7 @@
         </div>
       </div>
     </section>
+
     <section class="results-section">
       <div class="container">
         <div class="row mb-4">
@@ -70,23 +73,23 @@
                   Pesquise para encontrar sua declaração
                 </template>
                 <template v-else>
-                  {{ filteredDeclaracoes.length > 0 
-                    ? `${filteredDeclaracoes.length} declaração(ões) encontrada(s)` 
+                  {{ filteredDeclaracoes.length > 0
+                    ? `${filteredDeclaracoes.length} declaração(ões) encontrada(s)`
                     : 'Nenhuma declaração encontrada' }}
                 </template>
               </h3>
               <div class="view-options" v-if="searchQuery || selectedCourse || selectedYear || selectedStatus">
                 <div class="view-toggle">
-                  <button 
-                    @click="viewMode = 'grid'" 
+                  <button
+                    @click="viewMode = 'grid'"
                     class="view-btn"
                     :class="{ active: viewMode === 'grid' }"
                   >
                     <i class="bi bi-grid-3x3-gap"></i>
                     <span>Grade</span>
                   </button>
-                  <button 
-                    @click="viewMode = 'list'" 
+                  <button
+                    @click="viewMode = 'list'"
                     class="view-btn"
                     :class="{ active: viewMode === 'list' }"
                   >
@@ -105,9 +108,11 @@
             </div>
           </div>
         </div>
-        <div v-if="viewMode === 'grid'" class="row">
-          <div 
-            v-for="declaracao in paginatedDeclaracoes" 
+
+        <!-- GRID VIEW -->
+        <div v-if="viewMode === 'grid' && filteredDeclaracoes.length > 0" class="row">
+          <div
+            v-for="declaracao in paginatedDeclaracoes"
             :key="declaracao.id"
             class="col-lg-4 col-md-6 mb-4"
           >
@@ -143,10 +148,7 @@
                   <div class="certificate-code-small">
                     {{ declaracao.codigo }}
                   </div>
-                  <button 
-                    @click="$emit('viewDetails', declaracao)" 
-                    class="btn-view-small"
-                  >
+                  <button @click="$emit('viewDetails', declaracao)" class="btn-view-small">
                     <i class="bi bi-eye"></i>
                   </button>
                 </div>
@@ -154,9 +156,11 @@
             </div>
           </div>
         </div>
-        <div v-else class="declarations-list">
-          <div 
-            v-for="declaracao in paginatedDeclaracoes" 
+
+        <!-- LIST VIEW -->
+        <div v-else-if="viewMode === 'list' && filteredDeclaracoes.length > 0" class="declarations-list">
+          <div
+            v-for="declaracao in paginatedDeclaracoes"
             :key="declaracao.id"
             class="list-item"
             @click="viewDeclaracao(declaracao)"
@@ -199,7 +203,9 @@
             </div>
           </div>
         </div>
-        <div class="row" v-if="totalPages > 1">
+
+        <!-- PAGINAÇÃO -->
+        <div class="row" v-if="totalPages > 1 && filteredDeclaracoes.length > 0">
           <div class="col-12">
             <nav class="pagination-nav">
               <ul class="pagination">
@@ -208,10 +214,10 @@
                     <i class="bi bi-chevron-left"></i>
                   </button>
                 </li>
-                <li 
-                  v-for="page in visiblePages" 
+                <li
+                  v-for="page in visiblePages"
                   :key="page"
-                  class="page-item" 
+                  class="page-item"
                   :class="{ active: page === currentPage }"
                 >
                   <button @click="changePage(page)" class="page-link">{{ page }}</button>
@@ -225,7 +231,7 @@
             </nav>
           </div>
         </div>
-        
+
       </div>
     </section>
   </div>
@@ -259,19 +265,20 @@ export default {
       const data = await CertificationsService.getAll();
       const list = Array.isArray(data) ? data : data.results || [];
       this.declaracoes = list.map(item => ({
-        id: item.id,
-        nomeCompleto: item.nome_completo,
-        curso: item.curso,
-        cargaHoraria: item.carga_horaria,
-        dataConclusao: item.data_conclusao,
-        codigo: item.codigo,
-        status: item.status,
-        documento: item.documento,
-        duracao: item.duracao ,
-        depoimento: item.depoimento || "Excelente curso!",
-        foto: item.foto || "https://via.placeholder.com/90",
-         modulos: item.modulos || [],
-      }));
+  id: item.id,
+  nomeCompleto: item.nome_completo,
+  curso: item.curso,
+  cargaHoraria: item.carga_horaria,
+  dataConclusao: item.data_conclusao,
+  codigo: item.codigo,
+  status: item.status,
+  documento: item.documento,
+  duracao: item.duracao,
+  depoimento: item.declaracao || `Certificamos que o(a) ${item.nome_completo} concluiu com aproveitamento o curso de ${item.curso}, com carga horária de ${item.carga_horaria}, no período de ${item.duracao}.`,
+  foto: item.foto || "https://via.placeholder.com/90",
+  modulos: item.modulos || [],
+  declaracao: item.declaracao || null
+}));
     } catch (err) {
       this.error = "Erro ao carregar declarações.";
       console.error(err);
@@ -282,7 +289,18 @@ export default {
 
   computed: {
     filteredDeclaracoes() {
+      // Não mostrar nada antes do usuário pesquisar ou filtrar
+      if (
+        !this.searchQuery &&
+        !this.selectedCourse &&
+        !this.selectedYear &&
+        !this.selectedStatus
+      ) {
+        return [];
+      }
+
       let results = this.declaracoes;
+
       if (this.searchQuery) {
         const q = this.searchQuery.toLowerCase();
         results = results.filter(
@@ -292,17 +310,21 @@ export default {
             d.codigo.toLowerCase().includes(q)
         );
       }
+
       if (this.selectedCourse) {
         results = results.filter(d => d.curso === this.selectedCourse);
       }
+
       if (this.selectedYear) {
         results = results.filter(d =>
           d.dataConclusao.startsWith(this.selectedYear)
         );
       }
+
       if (this.selectedStatus) {
         results = results.filter(d => d.status === this.selectedStatus);
       }
+
       return results;
     },
 
@@ -342,6 +364,9 @@ export default {
 
     clearSearch() {
       this.searchQuery = "";
+      this.selectedCourse = "";
+      this.selectedYear = "";
+      this.selectedStatus = "";
     },
 
     viewDeclaracao(declaracao) {
@@ -350,6 +375,7 @@ export default {
   }
 };
 </script>
+
 
 <style scoped>
 .search-section {
