@@ -1,6 +1,6 @@
 import axios from "axios";
 const BASE_URL = "https://cestificacoesiso-back.onrender.com"; 
-// const BASE_URL = "http://127.0.0.1:8000/"; 
+// const BASE_URL = "http://127.0.0.1:8000"; 
 const API_URL = `${BASE_URL}/api/certifications/`;
 
 export default {

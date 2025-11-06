@@ -1,39 +1,47 @@
 <template>
   <section class="carousel-section">
     <div class="container">
-      <div class="row">
-        <div class="col-12 text-center mb-1 mb-md-1 ">
-          <h2 class="section-title">Últimos Certificados Emitidos</h2>
-          <p class="section-subtitle">Conheça os alunos que acabaram de concluir nossos cursos</p>
-        </div>
+      <h2 class="section-title">Últimas Certificações Emitidas</h2>
+      <p class="section-subtitle">
+        Conheça os nossos formandos que recentemente concluíram seus cursos
+      </p>
+
+      <!-- Loading State -->
+      <div v-if="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Carregando certificações...</p>
       </div>
-      
-      <div class="carousel-container">
-        <div 
-          class="carousel-track" 
-          ref="carouselTrack" 
-          :style="carouselStyle"
-          @scroll="handleTrackScroll"
-          :class="{ 'centered-cards': shouldCenterCards }"
+
+      <!-- Carousel -->
+      <div v-else-if="declaracoes.length > 0" class="carousel-container">
+        <div
+          class="carousel-track"
+          :class="{ 'centered-cards': declaracoes.length <= cardsPerPage }"
+          ref="carouselTrack"
         >
-          <div 
-            v-for="(declaracao) in declaracoes" 
+          <div
+            v-for="declaracao in paginatedDeclaracoes"
             :key="declaracao.id"
             class="carousel-slide"
           >
             <div class="student-card">
               <div class="card-background"></div>
+
               <div class="student-photo">
-                <img :src="declaracao.foto" :alt="declaracao.nomeCompleto" />
+                <img
+                  :src="declaracao.foto"
+                  :alt="declaracao.nomeCompleto"
+                  @error="handleImageError"
+                />
                 <div class="photo-overlay">
-                  <i class="bi bi-award"></i>
+                  <i class="bi bi-award-fill"></i>
                 </div>
               </div>
-              
+
               <div class="student-info">
                 <h3 class="student-name">{{ declaracao.nomeCompleto }}</h3>
                 <p class="student-course">{{ declaracao.curso }}</p>
-                
+
                 <div class="student-details">
                   <div class="detail-item">
                     <i class="bi bi-calendar3"></i>
@@ -44,339 +52,197 @@
                     <span>{{ declaracao.cargaHoraria }}</span>
                   </div>
                   <div class="detail-item">
-                    <i class="bi bi-trophy"></i>
-                    <span>Aprovado</span>
+                    <i class="bi bi-hourglass-split"></i>
+                    <span>{{ declaracao.duracao }}</span>
                   </div>
                 </div>
-                
+
                 <div class="student-testimonial">
                   <i class="bi bi-quote quote-icon"></i>
-                  <p>
-                    <span>
-                      {{ declaracao.declaracao ? declaracao.declaracao : getDeclarationPreview(declaracao) }}
-                    </span>
-                  </p>
+                  <p>{{ getTestimonialText(declaracao) }}</p>
                 </div>
-                
+
                 <div class="certificate-info">
                   <div class="certificate-code">
-                    <i class="bi bi-qr-code me-1"></i>
+                    <i class="bi bi-shield-check"></i>
                     {{ declaracao.codigo }}
                   </div>
-                  
-                  <button @click="viewDetails(declaracao)" class="btn-view-cert">
-                    <i class="bi bi-eye me-2"></i>
-                    <span>Ver Detalhes</span>
-                    <i class="bi bi-arrow-right ms-2"></i>
+                  <button @click="emitViewDetails(declaracao)" class="btn-view-cert">
+                    <i class="bi bi-eye-fill"></i>
+                    Ver Certificado
                   </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-           <div class="pagination-controls" v-show="!isMobile && totalPages > 1">
-        <button 
-          @click="prevPage" 
-          class="pagination-arrow" 
-          :disabled="currentPage === 0"
-        >
-          <i class="bi bi-chevron-left"></i>
-        </button>
-        
-        <div class="pagination-numbers">
-          <button 
-            v-for="page in totalPages" 
-            :key="page"
-            @click="goToPage(page - 1)"
-            class="page-number"
-            :class="{ active: currentPage === page - 1 }"
+
+        <!-- Pagination Controls -->
+        <div v-if="totalPages > 1" class="pagination-controls">
+          <button
+            class="pagination-arrow"
+            @click="previousPage"
+            :disabled="currentPage === 1"
           >
-            {{ page }}
+            <i class="bi bi-chevron-left"></i>
+          </button>
+
+          <div class="pagination-numbers">
+            <button
+              v-for="page in visiblePages"
+              :key="page"
+              class="page-number"
+              :class="{ active: page === currentPage }"
+              @click="goToPage(page)"
+            >
+              {{ page }}
+            </button>
+          </div>
+
+          <button
+            class="pagination-arrow"
+            @click="nextPage"
+            :disabled="currentPage === totalPages"
+          >
+            <i class="bi bi-chevron-right"></i>
           </button>
         </div>
-        
-        <button 
-          @click="nextPage" 
-          class="pagination-arrow" 
-          :disabled="currentPage >= totalPages - 1"
-        >
-          <i class="bi bi-chevron-right"></i>
-        </button>
-      </div>
-      </div>
-      
-   
 
-      <div class="carousel-dots" v-show="isMobile">
-        <button 
-          v-for="(_, index) in dotsCount" 
-          :key="index"
-          @click="goToSlide(index)"
-          class="dot"
-          :class="{ active: currentDotIndex === index }"
-        ></button>
+        <!-- Dots for Mobile -->
+        <div v-if="totalPages > 1" class="carousel-dots">
+          <button
+            v-for="page in totalPages"
+            :key="`dot-${page}`"
+            class="dot"
+            :class="{ active: page === currentPage }"
+            @click="goToPage(page)"
+          ></button>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else class="empty-state">
+        <i class="bi bi-inbox"></i>
+        <p>Nenhuma certificação disponível no momento</p>
       </div>
     </div>
   </section>
 </template>
 
 <script>
-import CertificationsService from "@/components/services/certifications";
-
 export default {
-  name: "CarouselSection",
+  name: "UltimasDeclaracoes",
+  props: {
+    declaracoes: {
+      type: Array,
+      default: () => [],
+    },
+  },
   emits: ["viewDetails"],
-
   data() {
     return {
-      currentSlide: 0,
-      slidesToShow: 4,
-      autoSlideInterval: null,
-      isMobile: false,
-      declaracoes: [],
-      loading: true,
-      error: null,
-      isScrolling: false,
-      userInteracted: false,
-      userInteractionTimeout: null,
-      scrollTimeout: null,
+      loading: false,
+      currentPage: 1,
+      cardsPerPage: 4,
     };
   },
-
   computed: {
-    carouselStyle() {
-      return { display: "flex" };
-    },
-
-    maxSlide() {
-      return this.isMobile
-        ? Math.max(0, this.declaracoes.length - 1)
-        : Math.max(0, this.declaracoes.length - this.slidesToShow);
-    },
-
-    dotsCount() {
-      return this.isMobile
-        ? Math.min(3, this.declaracoes.length)
-        : Math.ceil(this.declaracoes.length / this.slidesToShow);
-    },
-
-    currentPage() {
-      return Math.floor(this.currentSlide / this.slidesToShow);
-    },
-
     totalPages() {
-      if (this.declaracoes.length <= this.slidesToShow) return 1;
-      return Math.ceil(this.declaracoes.length / this.slidesToShow);
+      return Math.ceil(this.declaracoes.length / this.cardsPerPage);
     },
+    paginatedDeclaracoes() {
+      const start = (this.currentPage - 1) * this.cardsPerPage;
+      const end = start + this.cardsPerPage;
+      return this.declaracoes.slice(start, end);
+    },
+    visiblePages() {
+      const pages = [];
+      const maxVisible = 5;
+      let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+      let end = Math.min(this.totalPages, start + maxVisible - 1);
 
-    shouldCenterCards() {
-      return !this.isMobile && this.declaracoes.length < this.slidesToShow;
+      if (end - start < maxVisible - 1) {
+        start = Math.max(1, end - maxVisible + 1);
+      }
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      return pages;
     },
   },
-
-  async created() {
-    try {
-      this.loading = true;
-      const data = await CertificationsService.getAll();
-
-      this.declaracoes = data.map((item) => ({
-        id: item.id,
-        nomeCompleto: item.nome_completo,
-        curso: item.curso,
-        cargaHoraria: item.carga_horaria,
-        dataConclusao: item.data_conclusao,
-        codigo: item.codigo,
-        status: item.status,
-        depoimento: item.depoimento || "Excelente curso! Recomendo a todos.",
-        duracao: item.duracao,
-        documento: item.documento,
-        declaracao: item.declaracao,
-        foto: item.foto
-          ? item.foto.startsWith("http")
-            ? item.foto
-            : `https://cestificacoesiso-back.onrender.com/${item.foto}`
-            // : `http://127.0.0.1:8000/admin/certifications/${item.foto}`
-          : "https://via.placeholder.com/90",
-           modulos: item.modulos || [], 
-      }));
-    } catch (err) {
-      this.error = "Não foi possível carregar as declarações.";
-      console.error(err);
-    } finally {
-      this.loading = false;
-    }
-  },
-
   mounted() {
-    this.updateResponsiveSettings();
-    window.addEventListener("resize", this.updateResponsiveSettings);
-
-    this.$nextTick(() => {
-      const track = this.$refs.carouselTrack;
-      if (track) {
-        track.addEventListener("scroll", this.handleTrackScroll, { passive: true });
-        track.addEventListener("touchstart", this.handleUserInteraction, { passive: true });
-        track.addEventListener("mousedown", this.handleUserInteraction);
-        track.addEventListener("wheel", this.handleUserInteraction, { passive: true });
-        track.addEventListener("mouseenter", this.handleUserInteraction);
-      }
-
-      setTimeout(() => {
-        this.startAutoSlide();
-      }, 800);
-    });
+    this.updateCardsPerPage();
+    window.addEventListener("resize", this.updateCardsPerPage);
   },
-
   beforeUnmount() {
-    window.removeEventListener("resize", this.updateResponsiveSettings);
-    this.stopAutoSlide();
-
-    if (this.userInteractionTimeout) clearTimeout(this.userInteractionTimeout);
-
-    const track = this.$refs.carouselTrack;
-    if (track) {
-      track.removeEventListener("scroll", this.handleTrackScroll);
-      track.removeEventListener("touchstart", this.handleUserInteraction);
-      track.removeEventListener("mousedown", this.handleUserInteraction);
-      track.removeEventListener("wheel", this.handleUserInteraction);
-      track.removeEventListener("mouseenter", this.handleUserInteraction);
-    }
+    window.removeEventListener("resize", this.updateCardsPerPage);
   },
-
   methods: {
-    viewDetails(declaracao) {
-      
-       if (declaracao.unique_link) {
-      this.$router.push({
-        name: 'declaracoesLink',
-        params: { uniqueLink: declaracao.unique_link }
-      });
-    } else {
-      this.$emit('viewDetails', declaracao);
-    }
-  },
-
-    getDeclarationPreview(declaracao) {
-      return `Certificamos que o(a)  ${declaracao.nomeCompleto} concluiu com aproveitamento o curso de ${declaracao.curso}, com carga horária de ${declaracao.cargaHoraria}, no período de ${declaracao.duracao}.`;
+    emitViewDetails(declaracao) {
+      console.log("🔵 Emitindo viewDetails para:", declaracao);
+      this.$emit("viewDetails", declaracao);
     },
-
-    handleUserInteraction() {
-      this.userInteracted = true;
-      this.stopAutoSlide();
-
-      if (this.userInteractionTimeout) clearTimeout(this.userInteractionTimeout);
-      this.userInteractionTimeout = setTimeout(() => {
-        this.userInteracted = false;
-        this.startAutoSlide();
-      }, 10000);
-    },
-
-    getSlideMetrics() {
-      const track = this.$refs.carouselTrack;
-      const slideEl = track?.querySelector(".carousel-slide");
-      const slideWidth = slideEl ? slideEl.getBoundingClientRect().width : 0;
-      const gap = parseInt(getComputedStyle(track || document.documentElement).gap) || 20;
-      return { track, slideWidth, gap };
-    },
-
-    nextSlide() {
-      const { track, slideWidth, gap } = this.getSlideMetrics();
-      if (!track || this.declaracoes.length <= 1) return;
-
-      this.currentSlide = (this.currentSlide + 1) % this.declaracoes.length;
-      const left = this.currentSlide * (slideWidth + gap);
-      track.scrollTo({ left, behavior: "smooth" });
-    },
-   goToPage(page) {
-  const { track, slideWidth, gap } = this.getSlideMetrics();
-  if (!track) return;
-
-  const targetIndex = this.isMobile
-    ? page - 1
-    : (page - 1) * this.slidesToShow; 
-
-  this.currentSlide = Math.max(0, Math.min(targetIndex, this.declaracoes.length - 1));
-
-  const left = this.currentSlide * (slideWidth + gap);
-  track.scrollTo({ left, behavior: "smooth" });
-},
-
-    prevSlide() {
-      const { track, slideWidth, gap } = this.getSlideMetrics();
-      if (!track || this.declaracoes.length <= 1) return;
-
-      this.currentSlide =
-        this.currentSlide > 0 ? this.currentSlide - 1 : this.declaracoes.length - 1;
-      const left = this.currentSlide * (slideWidth + gap);
-      track.scrollTo({ left, behavior: "smooth" });
-    },
-
-    startAutoSlide() {
-      this.stopAutoSlide();
-      if (this.declaracoes.length <= 1) return;
-
-      this.autoSlideInterval = setInterval(() => {
-        if (!this.userInteracted) this.nextSlide();
-      }, 5000);
-    },
-
-    stopAutoSlide() {
-      if (this.autoSlideInterval) {
-        clearInterval(this.autoSlideInterval);
-        this.autoSlideInterval = null;
-      }
-    },
-
-    updateResponsiveSettings() {
-      const width = window.innerWidth;
-      const wasMobile = this.isMobile;
-
-      if (width < 768) {
-        this.slidesToShow = 1;
-        this.isMobile = true;
-      } else {
-        this.slidesToShow = 4;
-        this.isMobile = false;
-      }
-
-      if (wasMobile !== this.isMobile) {
-        this.currentSlide = 0;
-        this.$nextTick(() => {
-          const { track } = this.getSlideMetrics();
-          if (track) track.scrollTo({ left: 0, behavior: "smooth" });
-          this.startAutoSlide();
-        });
-      }
-    },
-
     formatDate(dateString) {
       if (!dateString) return "Data não disponível";
       const date = new Date(dateString);
-      return isNaN(date.getTime())
-        ? "Data inválida"
-        : date.toLocaleDateString("pt-BR");
+      return date.toLocaleDateString("pt-BR", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
     },
-
-    handleTrackScroll() {
-      if (!this.$refs.carouselTrack || this.isScrolling) return;
-      this.isScrolling = true;
-
-      clearTimeout(this.scrollTimeout);
-      this.scrollTimeout = setTimeout(() => {
-        const { track, slideWidth, gap } = this.getSlideMetrics();
-        if (!track) {
-          this.isScrolling = false;
-          return;
-        }
-        const index = Math.round(track.scrollLeft / (slideWidth + gap));
-        this.currentSlide = Math.max(0, Math.min(index, this.declaracoes.length - 1));
-        this.isScrolling = false;
-      }, 100);
+    handleImageError(event) {
+      event.target.src = "https://via.placeholder.com/90";
+    },
+    getTestimonialText(declaracao) {
+      // Pega um trecho da declaração ou usa um texto padrão
+      if (declaracao.declaracao && declaracao.declaracao.length > 100) {
+        return declaracao.declaracao.substring(0, 100) + "...";
+      } else if (declaracao.declaracao) {
+        return declaracao.declaracao;
+      }
+      return `Concluí com sucesso o curso de ${declaracao.curso}. Foi uma experiência enriquecedora!`;
+    },
+    updateCardsPerPage() {
+      const width = window.innerWidth;
+      if (width < 768) {
+        this.cardsPerPage = 1;
+      } else if (width < 992) {
+        this.cardsPerPage = 2;
+      } else if (width < 1200) {
+        this.cardsPerPage = 3;
+      } else {
+        this.cardsPerPage = 4;
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.scrollToTop();
+      }
+    },
+    previousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.scrollToTop();
+      }
+    },
+    goToPage(page) {
+      this.currentPage = page;
+      this.scrollToTop();
+    },
+    scrollToTop() {
+      if (this.$refs.carouselTrack) {
+        this.$refs.carouselTrack.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
+      }
     },
   },
 };
 </script>
-
 
 <style scoped>
 * {
@@ -388,9 +254,7 @@ export default {
   background: linear-gradient(135deg, #f8f9fa, #e9ecef);
   background: transparent;
   overflow: hidden;
-  
 }
-
 
 .container {
   width: 100%;
@@ -404,6 +268,7 @@ export default {
   font-weight: 700;
   color: #2c3e50;
   margin-bottom: 1rem;
+  text-align: center;
 }
 
 .section-subtitle {
@@ -411,6 +276,44 @@ export default {
   color: #6c757d;
   font-weight: 300;
   margin-bottom: 0.6rem;
+  text-align: center;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3b4cb8;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+}
+
+.empty-state i {
+  font-size: 60px;
+  color: #dee2e6;
+  margin-bottom: 20px;
+}
+
+.empty-state p {
+  font-size: 18px;
+  font-weight: 500;
 }
 
 .carousel-container {
@@ -427,13 +330,15 @@ export default {
   align-items: flex-start;
   gap: 20px;
   padding: 0 10px;
-  overflow-x: auto;    
-  scroll-behavior: smooth;  
+  overflow-x: auto;
+  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;    
+  scrollbar-width: none;
 }
 
-.carousel-track::-webkit-scrollbar { display: none; }
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
 
 .carousel-track.centered-cards {
   justify-content: center;
@@ -744,19 +649,19 @@ export default {
 
 @media (max-width: 1200px) {
   .carousel-slide {
-    flex: 0 0 calc(25% - 15px);
+    flex: 0 0 calc(33.333% - 15px);
   }
 }
 
 @media (max-width: 992px) {
   .carousel-slide {
-    flex: 0 0 calc(25% - 15px);
+    flex: 0 0 calc(50% - 15px);
   }
-  
+
   .section-title {
     font-size: 2rem;
   }
-  
+
   .section-subtitle {
     font-size: 1.1rem;
   }
@@ -768,23 +673,23 @@ export default {
     overflow: visible;
     background: transparent;
   }
-  
+
   .section-title {
     font-size: 1.8rem;
     margin-bottom: 0.4rem;
   }
-  
+
   .section-subtitle {
     font-size: 1rem;
     margin-bottom: 0.6rem;
   }
-  
+
   .carousel-container {
     padding: 0;
     overflow: visible;
     min-height: auto;
     margin-top: 0;
-    display: contents; 
+    display: contents;
   }
 
   .carousel-track {
@@ -802,13 +707,13 @@ export default {
   .carousel-track::-webkit-scrollbar {
     display: none;
   }
-  
+
   .carousel-slide {
     flex: 0 0 280px;
     padding: 0;
     scroll-snap-align: center;
   }
-  
+
   .student-card {
     height: 450px;
     min-height: 450px;
@@ -899,66 +804,70 @@ export default {
     margin-top: auto;
     gap: 0.4rem;
   }
+
+  .pagination-controls {
+    display: none;
+  }
 }
 
 @media (max-width: 576px) {
   .carousel-track {
     padding: 0 10px 15px 10px;
   }
-  
+
   .carousel-slide {
     flex: 0 0 250px;
   }
-  
+
   .student-card {
     height: 430px;
     min-height: 430px;
     max-height: 430px;
   }
-  
+
   .section-title {
     font-size: 1.6rem;
   }
-  
+
   .section-subtitle {
     font-size: 0.9rem;
   }
-  
+
   .student-photo {
     width: 60px;
     height: 60px;
     margin: 10px auto 8px;
   }
-  
+
   .photo-overlay {
     width: 20px;
     height: 20px;
     font-size: 0.7rem;
   }
-  
+
   .student-info {
     padding: 0 0.6rem 0.6rem;
   }
-  
+
   .student-name {
     font-size: 0.85rem;
     min-height: 2rem;
     max-height: 2rem;
     margin-top: 0.4rem;
   }
-  
+
   .student-course {
     font-size: 0.72rem;
     margin-bottom: 0.5rem;
     min-height: 1.8rem;
     max-height: 1.8rem;
   }
-  
+
   .detail-item {
     font-size: 0.65rem;
     margin-bottom: 0.15rem;
   }
-  
+
   .student-testimonial {
     min-height: 75px;
     max-height: 75px;
@@ -973,12 +882,12 @@ export default {
     font-size: 0.7rem;
     line-height: 1.25;
   }
-  
+
   .certificate-code {
     font-size: 0.6rem;
     padding: 0.3rem;
   }
-  
+
   .btn-view-cert {
     padding: 0.5rem 0.7rem;
     font-size: 0.75rem;
@@ -989,35 +898,35 @@ export default {
   .carousel-track {
     padding: 0 10px 20px 10px;
   }
-  
+
   .carousel-slide {
     flex: 0 0 240px;
   }
-  
+
   .student-card {
     height: 420px;
     min-height: 420px;
     max-height: 420px;
   }
-  
+
   .section-title {
     font-size: 1.5rem;
   }
-  
+
   .section-subtitle {
     font-size: 0.85rem;
   }
-  
+
   .card-background {
     height: 80px;
   }
-  
+
   .student-photo {
     width: 55px;
     height: 55px;
     margin: 8px auto 8px;
   }
-  
+
   .photo-overlay {
     width: 18px;
     height: 18px;
@@ -1026,39 +935,39 @@ export default {
     right: -2px;
     border-width: 2px;
   }
-  
+
   .student-info {
     padding: 0 0.5rem 0.5rem;
   }
-  
+
   .student-name {
     font-size: 0.8rem;
     min-height: 1.8rem;
     max-height: 1.8rem;
     margin-top: 0.8rem;
   }
-  
+
   .student-course {
     font-size: 0.68rem;
     min-height: 1.6rem;
     max-height: 1.6rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .student-details {
     gap: 0.2rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .detail-item {
     font-size: 0.62rem;
   }
-  
+
   .detail-item i {
     width: 11px;
     margin-right: 0.25rem;
   }
-  
+
   .student-testimonial {
     padding: 0.5rem;
     min-height: 70px;
@@ -1067,35 +976,35 @@ export default {
     margin-bottom: 0.5rem;
     justify-content: flex-start;
   }
-  
+
   .quote-icon {
     font-size: 0.9rem;
     margin-bottom: 0.25rem;
     align-self: center;
   }
-  
+
   .student-testimonial p {
     font-size: 0.65rem;
     line-height: 1.3;
     -webkit-line-clamp: 3;
   }
-  
+
   .certificate-info {
     gap: 0.4rem;
     margin-top: auto;
   }
-  
+
   .certificate-code {
     font-size: 0.58rem;
     padding: 0.3rem;
   }
-  
+
   .btn-view-cert {
     padding: 0.45rem 0.6rem;
     font-size: 0.7rem;
     gap: 0.25rem;
   }
-  
+
   .carousel-dots {
     margin-top: 1.5rem;
   }
@@ -1114,5 +1023,11 @@ export default {
 .carousel-track.centered-cards .carousel-slide {
   flex: 0 0 calc(25% - 15px) !important;
   max-width: 320px !important;
+}
+
+@media (min-width: 769px) {
+  .carousel-dots {
+    display: none;
+  }
 }
 </style>

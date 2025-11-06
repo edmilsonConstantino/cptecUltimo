@@ -2,23 +2,27 @@
   <div>
     <HeroDeclaracoes />
 
-    <UltimasDeclaracoes @viewDetails="openModal" />
+    <!-- Passa os dados já carregados -->
+    <UltimasDeclaracoes 
+      :declaracoes="declaracoes" 
+      @viewDetails="openModal" 
+    />
 
-    <BuscarDeclaracoes @viewDetails="openModal" />
+    <BuscarDeclaracoes 
+      :declaracoes="declaracoes" 
+      @viewDetails="openModal" 
+    />
 
-    <!-- Modal de Detalhes -->
+    <!-- Modal -->
     <DetalheDeclaracoes
       v-if="selectedDeclaracao"
       :selectedDeclaracao="selectedDeclaracao"
       @close="closeModal"
     />
 
-    <!-- Loading enquanto busca via link único -->
-    <div v-if="loadingUniqueLink" class="loading-overlay">
-      <div class="loading-container">
-        <div class="spinner"></div>
-        <p>Carregando certificação...</p>
-      </div>
+    <!-- Loading -->
+    <div v-if="loading" class="loading-overlay">
+     
     </div>
   </div>
 </template>
@@ -36,47 +40,76 @@ export default {
     DetalheDeclaracoes,
     HeroDeclaracoes,
     UltimasDeclaracoes,
-    BuscarDeclaracoes
+    BuscarDeclaracoes,
   },
   props: {
     uniqueLink: {
       type: String,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
+      declaracoes: [],
       selectedDeclaracao: null,
-      loadingUniqueLink: false
+      loading: false,
     };
   },
   async mounted() {
+    await this.loadAllDeclaracoes();
+
     if (this.uniqueLink) {
       await this.loadDeclaracaoByLink(this.uniqueLink);
     }
   },
   methods: {
-    openModal(declaracao) {
-      this.selectedDeclaracao = declaracao;
-      document.body.style.overflow = 'hidden';
-    },
+    // 🔹 Carrega todas as certificações uma única vez
+    async loadAllDeclaracoes() {
+      try {
+        this.loading = true;
+        const response = await CertificationsService.getAll();
 
-    closeModal() {
-      this.selectedDeclaracao = null;
-      document.body.style.overflow = 'auto';
-      
-      if (this.uniqueLink) {
-        this.$router.push({ name: 'declaracoes' });
+        // Caso o backend retorne { count, results: [...] }
+        this.declaracoes = Array.isArray(response)
+          ? response
+          : response.results || [];
+
+        // Normaliza os campos (opcional)
+        this.declaracoes = this.declaracoes.map((item) => ({
+          id: item.id,
+          nomeCompleto: item.nome_completo,
+          curso: item.curso,
+          cargaHoraria: item.carga_horaria,
+          dataConclusao: item.data_conclusao,
+          codigo: item.codigo,
+          status: item.status,
+          declaracao:
+            item.declaracao ||
+            `Certificamos que o(a) ${item.nome_completo} concluiu o curso de ${item.curso}.`,
+          duracao: item.duracao,
+          documento: item.documento,
+          foto: item.foto
+            ? item.foto.startsWith("http")
+              ? item.foto
+              : `https://cestificacoesiso-back.onrender.com${item.foto}`
+            : "https://via.placeholder.com/90",
+          modulos: item.modulos || [],
+          unique_link: item.unique_link,
+          link_completo: item.link_completo,
+        }));
+      } catch (error) {
+        console.error("Erro ao carregar certificações:", error);
+      } finally {
+        this.loading = false;
       }
     },
 
+    // 🔹 Busca apenas uma declaração via link único (quando necessário)
     async loadDeclaracaoByLink(uniqueLink) {
       try {
-        this.loadingUniqueLink = true;
-        
+        this.loading = true;
         const data = await CertificationsService.getByUniqueLink(uniqueLink);
-        
-        // Mapear os dados para o formato esperado
+
         const declaracao = {
           id: data.id,
           nomeCompleto: data.nome_completo,
@@ -88,46 +121,39 @@ export default {
           codigo: data.codigo,
           status: data.status,
           unique_link: data.unique_link,
-          declaracao: data.declaracao || this.getDeclarationPreview(data),
-          depoimento: data.depoimento || "Excelente curso! Recomendo a todos.",
+          declaracao:
+            data.declaracao ||
+            `Declaramos que ${data.nome_completo} concluiu o curso ${data.curso}.`,
           foto: data.foto
-            ? (data.foto.startsWith("http")
-                ? data.foto
-                : `https://cestificacoesiso-back.onrender.com/${data.foto}`)
-            : "https://via.placeholder.com/90"
+            ? data.foto.startsWith("http")
+              ? data.foto
+              : `http://127.0.0.1:8000${data.foto}`
+            : "https://via.placeholder.com/90",
+          modulos: data.modulos || [],
         };
 
-        this.loadingUniqueLink = false;
-        
-        setTimeout(() => {
-          this.openModal(declaracao);
-        }, 300);
-
-      } catch (err) {
-        console.error('Erro ao buscar declaração:', err);
-        this.loadingUniqueLink = false;
-        
-        alert('Certificação não encontrada. Verifique se o link está correto.');
-        
-        this.$router.push({ name: 'declaracoes' });
+        this.openModal(declaracao);
+      } catch (error) {
+        console.error("Erro ao buscar por link:", error);
+      } finally {
+        this.loading = false;
       }
     },
 
-    getDeclarationPreview(data) {
-      return `Declaramos que ${data.nome_completo} concluiu com aproveitamento o curso de ${data.curso}, com carga horária de ${data.carga_horaria}, no período de ${data.duracao}.`;
-    }
-  },
+    // 🔹 Modal
+    openModal(declaracao) {
+      this.selectedDeclaracao = declaracao;
+      document.body.style.overflow = "hidden";
+    },
+    closeModal() {
+      this.selectedDeclaracao = null;
+      document.body.style.overflow = "auto";
 
-  watch: {
-    uniqueLink: {
-      immediate: true,
-      async handler(newLink) {
-        if (newLink && !this.selectedDeclaracao) {
-          await this.loadDeclaracaoByLink(newLink);
-        }
+      if (this.uniqueLink) {
+        this.$router.push({ name: "declaracoes" });
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -165,13 +191,11 @@ export default {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loading-container p {
-  font-size: 1.2rem;
-  color: #6c757d;
-  margin: 0;
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
