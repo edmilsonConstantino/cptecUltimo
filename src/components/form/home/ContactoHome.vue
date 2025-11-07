@@ -350,7 +350,7 @@ export default {
       
       try {
         const backendUrls = [
-          "https://cestificacoesiso-back.onrender.com/api/certifications/",
+          "https://cestificacoesiso-back.onrender.com/api/submissions/",
           "http://localhost:8000/api/submissions/"
         ];
         
