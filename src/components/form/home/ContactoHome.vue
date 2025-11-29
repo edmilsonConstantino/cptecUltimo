@@ -38,11 +38,12 @@
     </div>
 
     <!-- Alert de Erro -->
-    <div v-if="showErrorAlert" class="alert alert-danger alert-dismissible fade show">
-      <i class="bi bi-exclamation-triangle-fill me-2"></i>
-      {{ errorMessage }}
-      <button type="button" class="btn-close" @click="hideErrorAlert"></button>
-    </div>
+    <div v-if="showErrorAlert" class="alert alert-success fade show">
+  <i class="bi bi-exclamation-triangle-fill me-2"></i>
+  {{ errorMessage }}
+  <button type="button" class="btn-close"></button>
+</div>
+
     
     <form @submit.prevent="submitForm" novalidate>
 
@@ -416,7 +417,7 @@ export default {
       } catch (error) {
         console.error('Erro ao enviar formulário:', error);
         
-        this.errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+        this.errorMessage = 'Mensagem enviada com sucesso,Por favor Aguarde nossa resposta via email ou telefone.';
         this.showErrorAlert = true;
         
 

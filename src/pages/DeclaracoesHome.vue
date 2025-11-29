@@ -91,7 +91,8 @@ export default {
           foto: item.foto
             ? item.foto.startsWith("http")
               ? item.foto
-              : `https://cestificacoesiso-back.onrender.com${item.foto}`
+              // : `https://cestificacoesiso-back.onrender.com${item.foto}`
+              : `http://127.0.0.1:8000/${item.foto}`
             : "https://via.placeholder.com/90",
           modulos: item.modulos || [],
           unique_link: item.unique_link,
@@ -127,7 +128,7 @@ export default {
           foto: data.foto
             ? data.foto.startsWith("http")
               ? data.foto
-              : `http://127.0.0.1:8000${data.foto}`
+              : `https://cestificacoesiso-back.onrender.com${data.foto}`
             : "https://via.placeholder.com/90",
           modulos: data.modulos || [],
         };

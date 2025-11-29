@@ -63,7 +63,7 @@
       </div>
     </section>
 
-    <section class="results-section">
+    <section class="results-section" v-if="searchQuery || selectedCourse || selectedYear || selectedStatus">
       <div class="container">
         <div class="row mb-4">
           <div class="col-12">
@@ -487,9 +487,8 @@ export default {
   background: white;
 }
 .results-section {
-  padding: 4rem 0;
+  padding: 3rem 0;
   background: #f8f9fa;
-  min-height: 50vh;
 }
 .results-header {
   display: flex;
@@ -499,7 +498,7 @@ export default {
   flex-wrap: wrap;
   gap: 1rem;
 }
-.results-header h3 {
+.results-header h1 {
   font-size: 1.5rem;
   color: #2c3e50;
   margin: 0;
