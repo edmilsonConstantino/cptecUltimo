@@ -321,7 +321,7 @@ export default {
 }
 
 .modal-container {
-  background: white;
+  background: #ffffff;
   border-radius: 16px;
   max-width: 1100px;
   width: 100%;
@@ -367,6 +367,7 @@ export default {
   background: #dc3545;
   color: white;
   transform: rotate(90deg);
+  box-shadow: 0 5px 20px rgba(220, 53, 69, 0.4);
 }
 
 /* DESKTOP VERSION */
@@ -382,7 +383,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding-bottom: 18px;
-  border-bottom: 2px solid #e8e8e8;
+  border-bottom: 2px solid #e8ecef;
   margin-bottom: 20px;
 }
 
@@ -395,27 +396,27 @@ export default {
 .logo-circle {
   width: 65px;
   height: 65px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #4c7ce5;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-size: 30px;
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(76, 124, 229, 0.3);
 }
 
 .institution-info h2 {
   font-size: 20px;
   font-weight: 800;
-  color: #2c3e50;
+  color: #1e293b;
   margin-bottom: 2px;
   line-height: 1.2;
 }
 
 .institution-info p {
   font-size: 12px;
-  color: #6c757d;
+  color: #64748b;
   font-weight: 500;
 }
 
@@ -431,8 +432,8 @@ export default {
   height: 80px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid #667eea;
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+  border: 3px solid #4c7ce5;
+  box-shadow: 0 4px 12px rgba(76, 124, 229, 0.3);
 }
 
 .student-photo img {
@@ -444,7 +445,7 @@ export default {
 .student-block h3 {
   font-size: 17px;
   font-weight: 800;
-  color: #2c3e50;
+  color: #1e293b;
   text-align: center;
   line-height: 1.2;
 }
@@ -453,13 +454,13 @@ export default {
   display: flex;
   align-items: center;
   gap: 5px;
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  background: #10b981;
   color: white;
   padding: 5px 14px;
   border-radius: 20px;
   font-size: 11px;
   font-weight: 700;
-  box-shadow: 0 3px 8px rgba(40, 167, 69, 0.3);
+  box-shadow: 0 3px 8px rgba(16, 185, 129, 0.3);
 }
 
 .certificate-body {
@@ -476,29 +477,29 @@ export default {
 .line-ornament {
   width: 90px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #667eea, #764ba2, transparent);
+  background: linear-gradient(90deg, transparent, #4c7ce5, transparent);
   margin: 8px auto;
 }
 
 .title-section h1 {
   font-size: 26px;
   font-weight: 900;
-  color: #2c3e50;
+  color: #1e293b;
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
 .declaration-text {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+  background: #e3f2fd;
   padding: 18px;
   border-radius: 10px;
-  border-left: 3px solid #667eea;
+  border-left: 3px solid #4c7ce5;
 }
 
 .declaration-text p {
   font-size: 14px;
   line-height: 1.65;
-  color: #495057;
+  color: #475569;
   text-align: justify;
   margin: 0;
   text-transform: uppercase;
@@ -511,8 +512,8 @@ export default {
 }
 
 .info-item {
-  background: white;
-  border: 1px solid #e8e8e8;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 14px;
   display: flex;
@@ -523,13 +524,13 @@ export default {
 
 .info-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-  border-color: #667eea;
+  box-shadow: 0 5px 15px rgba(76, 124, 229, 0.15);
+  border-color: #4c7ce5;
 }
 
 .info-item i {
   font-size: 26px;
-  color: #667eea;
+  color: #4c7ce5;
   flex-shrink: 0;
 }
 
@@ -542,7 +543,7 @@ export default {
 .info-content .label {
   font-size: 9px;
   font-weight: 700;
-  color: #6c757d;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -550,22 +551,22 @@ export default {
 .info-content strong {
   font-size: 13px;
   font-weight: 800;
-  color: #2c3e50;
+  color: #1e293b;
   line-height: 1.3;
 }
 
 .modules-section {
   margin-top: 0;
   padding: 18px;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.03), rgba(118, 75, 162, 0.03));
+  background: #f8fafc;
   border-radius: 10px;
-  border: 1px solid rgba(102, 126, 234, 0.1);
+  border: 1px solid #e2e8f0;
 }
 
 .modules-title {
   font-size: 17px;
   font-weight: 700;
-  color: #2c3e50;
+  color: #1e293b;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -573,7 +574,7 @@ export default {
 }
 
 .modules-title i {
-  color: #667eea;
+  color: #4c7ce5;
   font-size: 19px;
 }
 
@@ -590,20 +591,20 @@ export default {
   background: white;
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid #e2e8f0;
   transition: all 0.3s ease;
 }
 
 .module-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
-  border-color: #667eea;
+  box-shadow: 0 5px 12px rgba(76, 124, 229, 0.15);
+  border-color: #4c7ce5;
 }
 
 .module-number {
   width: 30px;
   height: 30px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #4c7ce5;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -618,7 +619,7 @@ export default {
   flex: 1;
   font-size: 13px;
   font-weight: 600;
-  color: #2c3e50;
+  color: #1e293b;
   line-height: 1.3;
 }
 
@@ -631,7 +632,7 @@ export default {
 }
 
 .mobile-header {
-  background: linear-gradient(135deg, #667eea 0%, #3b82f6 100%);
+  background: #4c7ce5;
   padding: 70px 18px 25px;
   color: white;
   text-align: center;
@@ -660,7 +661,7 @@ export default {
   right: -4px;
   width: 26px;
   height: 26px;
-  background: linear-gradient(135deg, #ffc107, #ff8c00);
+  background: #10b981;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -691,7 +692,7 @@ export default {
 .mobile-body h2 {
   font-size: 18px;
   font-weight: 900;
-  color: #2c3e50;
+  color: #1e293b;
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -699,17 +700,17 @@ export default {
 }
 
 .mobile-text {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+  background: #e3f2fd;
   padding: 16px;
   border-radius: 10px;
-  border-left: 3px solid #667eea;
+  border-left: 3px solid #4c7ce5;
   margin-bottom: 18px;
 }
 
 .mobile-text p {
   font-size: 13px;
   line-height: 1.6;
-  color: #495057;
+  color: #475569;
   margin: 0;
   text-transform: uppercase;
 }
@@ -724,15 +725,15 @@ export default {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: white;
-  border: 1px solid #e8e8e8;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 12px;
 }
 
 .mobile-info-row i {
   font-size: 24px;
-  color: #667eea;
+  color: #4c7ce5;
   flex-shrink: 0;
 }
 
@@ -746,14 +747,14 @@ export default {
 .mobile-info-row span {
   font-size: 10px;
   font-weight: 700;
-  color: #6c757d;
+  color: #64748b;
   text-transform: uppercase;
 }
 
 .mobile-info-row strong {
   font-size: 13px;
   font-weight: 800;
-  color: #2c3e50;
+  color: #1e293b;
 }
 
 .mobile-modules {
@@ -774,13 +775,13 @@ export default {
   background: white;
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid #e2e8f0;
 }
 
 .module-number-mobile {
   width: 28px;
   height: 28px;
-  background: linear-gradient(135deg, #667eea, #3b82f6);
+  background: #4c7ce5;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -795,7 +796,7 @@ export default {
   flex: 1;
   font-size: 12px;
   font-weight: 600;
-  color: #2c3e50;
+  color: #1e293b;
   line-height: 1.3;
 }
 

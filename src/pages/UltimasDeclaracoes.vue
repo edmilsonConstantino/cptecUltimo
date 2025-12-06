@@ -5,11 +5,11 @@
       <h2 class="section-title">Certificações Recentes</h2>
       <p class="section-subtitle">Profissionais certificados</p>
 
-      <!-- Loading -->
-      <div v-if="loading" class="loading-state">
+     <div v-if="loading" class="loading-state">
         <div class="spinner"></div>
         <p>Carregando...</p>
-      </div>
+      </div>   <!-- Loading -->
+    
 
       <!-- Carousel -->
       <div v-else-if="declaracoes.length > 0" class="carousel-wrapper">

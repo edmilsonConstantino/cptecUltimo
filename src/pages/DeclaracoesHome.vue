@@ -1,16 +1,9 @@
 <template>
   <div>
-    <HeroDeclaracoes />
-
-    <!-- Passa os dados já carregados -->
-    <UltimasDeclaracoes 
-      :declaracoes="declaracoes" 
-      @viewDetails="openModal" 
-    />
-
-    <BuscarDeclaracoes 
-      :declaracoes="declaracoes" 
-      @viewDetails="openModal" 
+    <HeroDeclaracoes 
+      :declaracoes="declaracoes"
+      :loading="loading"
+      @viewDetails="openModal"
     />
 
     <!-- Modal -->
@@ -19,11 +12,6 @@
       :selectedDeclaracao="selectedDeclaracao"
       @close="closeModal"
     />
-
-    <!-- Loading -->
-    <div v-if="loading" class="loading-overlay">
-     
-    </div>
   </div>
 </template>
 
@@ -31,16 +19,12 @@
 import CertificationsService from "@/components/services/certifications";
 import DetalheDeclaracoes from "@/pages/DetalheDeclaracoes.vue";
 import HeroDeclaracoes from "@/pages/HeroDeclaracoes.vue";
-import UltimasDeclaracoes from "@/pages/UltimasDeclaracoes.vue";
-import BuscarDeclaracoes from "@/pages/BuscaDeclaracoes.vue";
 
 export default {
   name: "DeclaracoesHome",
   components: {
     DetalheDeclaracoes,
     HeroDeclaracoes,
-    UltimasDeclaracoes,
-    BuscarDeclaracoes,
   },
   props: {
     uniqueLink: {
@@ -63,18 +47,15 @@ export default {
     }
   },
   methods: {
-    // 🔹 Carrega todas as certificações uma única vez
     async loadAllDeclaracoes() {
       try {
         this.loading = true;
         const response = await CertificationsService.getAll();
 
-        // Caso o backend retorne { count, results: [...] }
         this.declaracoes = Array.isArray(response)
           ? response
           : response.results || [];
 
-        // Normaliza os campos (opcional)
         this.declaracoes = this.declaracoes.map((item) => ({
           id: item.id,
           nomeCompleto: item.nome_completo,
@@ -91,21 +72,20 @@ export default {
           foto: item.foto
             ? item.foto.startsWith("http")
               ? item.foto
-              // : `https://cestificacoesiso-back.onrender.com${item.foto}`
-              : `http://127.0.0.1:8000/${item.foto}`
+              : `https://cestificacoesiso-back.onrender.com${item.foto}`
             : "https://via.placeholder.com/90",
           modulos: item.modulos || [],
           unique_link: item.unique_link,
           link_completo: item.link_completo,
         }));
       } catch (error) {
-        console.error("Erro ao carregar certificações:", error);
+        // Você pode adicionar um toast ou notificação aqui se quiser
+        console.warn("Erro ao carregar certificações:", error.message);
       } finally {
         this.loading = false;
       }
     },
 
-    // 🔹 Busca apenas uma declaração via link único (quando necessário)
     async loadDeclaracaoByLink(uniqueLink) {
       try {
         this.loading = true;
@@ -135,17 +115,17 @@ export default {
 
         this.openModal(declaracao);
       } catch (error) {
-        console.error("Erro ao buscar por link:", error);
+        console.warn("Erro ao buscar por link único:", error.message);
       } finally {
         this.loading = false;
       }
     },
 
-    // 🔹 Modal
     openModal(declaracao) {
       this.selectedDeclaracao = declaracao;
       document.body.style.overflow = "hidden";
     },
+    
     closeModal() {
       this.selectedDeclaracao = null;
       document.body.style.overflow = "auto";
@@ -179,6 +159,13 @@ export default {
   text-align: center;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   max-width: 400px;
+}
+
+.loading-container p {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
+  margin: 0;
 }
 
 .spinner {
