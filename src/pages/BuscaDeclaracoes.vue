@@ -28,6 +28,11 @@
                   <button @click="clearSearch" class="clear-btn" v-if="searchQuery">
                     <i class="bi bi-x"></i>
                   </button>
+
+                  <!-- nova seta dentro do campo -->
+                  <button type="button" class="search-submit" @click="submitSearch" aria-label="Buscar">
+                    <i class="bi bi-arrow-right"></i>
+                  </button>
                 </div>
               </div>
               <div class="search-filters">
@@ -281,7 +286,6 @@ export default {
 }));
     } catch (err) {
       this.error = "Erro ao carregar declarações.";
-      console.error(err);
     } finally {
       this.loading = false;
     }
@@ -362,6 +366,17 @@ export default {
       }
     },
 
+    filterDeclaracoes() {
+      // garante que a paginação volte pra primeira página ao filtrar
+      this.currentPage = 1;
+      // computed filteredDeclaracoes faz o resto
+    },
+
+    submitSearch() {
+      // aciona a filtragem e mantém o comportamento de UX mínimo
+      this.filterDeclaracoes();
+    },
+
     clearSearch() {
       this.searchQuery = "";
       this.selectedCourse = "";
@@ -370,7 +385,6 @@ export default {
     },
 
     viewDeclaracao(declaracao) {
-      console.log("Abrir detalhes:", declaracao);
     }
   }
 };
@@ -418,7 +432,7 @@ export default {
 }
 .search-input {
   width: 100%;
-  padding: 1rem 3rem 1rem 3rem;
+  padding: 1rem 5.5rem 1rem 3rem; /* espaço maior à direita para o botão */
   font-size: 1.1rem;
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 50px;
@@ -437,7 +451,7 @@ export default {
 }
 .clear-btn {
   position: absolute;
-  right: 1rem;
+  right: 5.6rem; /* desloca para ficar à esquerda da seta */
   top: 50%;
   transform: translateY(-50%);
   width: 30px;
@@ -451,10 +465,33 @@ export default {
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  z-index: 5;
 }
 .clear-btn:hover {
   background: #c82333;
   transform: translateY(-50%) scale(1.1);
+}
+.search-submit {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5b6bf0, #6f4df0);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 4;
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.25);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.search-submit i {
+  font-size: 1.1rem;
 }
 .search-filters {
   display: grid;
@@ -881,8 +918,16 @@ export default {
     padding: 1.5rem;
   }
   .search-input {
-    padding: 0.75rem 2.5rem;
+    padding: 0.75rem 4.8rem 0.75rem 3rem;
     font-size: 1rem;
+  }
+  .search-submit {
+    width: 38px;
+    height: 38px;
+    right: 0.5rem;
+  }
+  .clear-btn {
+    right: 4.8rem;
   }
   .pagination .page-link {
     width: 35px;

@@ -9,14 +9,12 @@ import 'bootstrap'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import './assets/styles/main.css';
 
-// Configurações globais do Axios
-axios.defaults.baseURL = 'http://127.0.0.1:8000/';
+axios.defaults.baseURL = 'https://cestificacoesiso-back.onrender.com/';
 axios.defaults.withCredentials = true; 
 
 const pinia = createPinia();
 const app = createApp(App);
 
-// Torna o axios global
 app.config.globalProperties.$axios = axios;
 
 app.use(router);

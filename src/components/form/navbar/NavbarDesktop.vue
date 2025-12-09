@@ -40,19 +40,19 @@
               :class="{ active: activeSection === 'certificacoes' || activeSection === 'declaracoes' }"
               @mouseenter="showDropdown = true"
               @mouseleave="showDropdown = false">
-        <div class="nav-link dropdown-trigger">
-            <i
-              v-if="currentDropdownText === 'Certificações'"
-              class="bi bi-award-fill dropdown-visible-icon"
-            ></i>
-            <i
-              v-else
-              class="bi bi-file-earmark-text-fill dropdown-visible-icon"
-            ></i>
+            <div class="nav-link dropdown-trigger">
+              <i
+                v-if="currentDropdownText === 'Certificações'"
+                class="bi bi-award-fill dropdown-visible-icon"
+              ></i>
+              <i
+                v-else
+                class="bi bi-file-earmark-text-fill dropdown-visible-icon"
+              ></i>
 
-            <span class="dropdown-text">{{ currentDropdownText }}</span>
-            <i class="bi bi-chevron-down dropdown-icon" :class="{ rotated: showDropdown }"></i>
-          </div>
+              <span class="dropdown-text">{{ currentDropdownText }}</span>
+              <i class="bi bi-chevron-down dropdown-icon" :class="{ rotated: showDropdown }"></i>
+            </div>
 
             
             <div class="dropdown-menu" :class="{ show: showDropdown }">
@@ -183,22 +183,31 @@ export default {
     },
     getInitialActiveSection() {
       const currentRoute = this.$route?.path || window.location.pathname;
-      const routeMap = {
+      
+      // Verifica correspondência exata primeiro
+      const exactRouteMap = {
         '/': 'inicio',
         '/Depoimento': 'depoimentos',
         '/Cursos': 'cursos', 
         '/Certificacoes': 'certificacoes',
         '/declaracoes': 'declaracoes',
         '/Contacto': 'contato',
-        '/SobreNos': 'SobreNos',
-        '/Ambiental': 'cursos',
-        '/Qualidade': 'cursos',
-        '/Saude': 'cursos',
-        '/Higiene': 'cursos',
-        '/Monitoria': 'cursos',
-        '/Nebosh': 'cursos'
+        '/SobreNos': 'SobreNos'
       };
-      return routeMap[currentRoute] || 'inicio';
+      
+      // Se encontrar correspondência exata, retorna
+      if (exactRouteMap[currentRoute]) {
+        return exactRouteMap[currentRoute];
+      }
+      
+      // Verifica se é uma subpágina de cursos
+      const cursosPages = ['/Ambiental', '/Qualidade', '/Saude', '/Higiene', '/Monitoria', '/Nebosh'];
+      if (cursosPages.includes(currentRoute)) {
+        return 'cursos';
+      }
+      
+      // Padrão é inicio
+      return 'inicio';
     },
     updateActiveSection() {
       const newActiveSection = this.getInitialActiveSection();
@@ -575,21 +584,17 @@ export default {
     top: 70px;
     right: -100%;
     width: 100%;
-    height: 80vh;
-    max-height: 600px;
-    background: rgba(255, 255, 255, 0.98);
+    height: calc(100vh - 70px);
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.98) 0%, rgba(241, 245, 249, 0.98) 100%);
     backdrop-filter: blur(20px);
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    padding: 3rem 1.5rem 2.5rem;
+    padding: 1.5rem 1.5rem;
     transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     margin-left: 0;
     margin-right: 0;
-    box-shadow: -5px 0 30px rgba(0, 0, 0, 0.2);
-    border-left: 1px solid rgba(102, 126, 234, 0.1);
-    border-bottom: 1px solid rgba(102, 126, 234, 0.1);
-    border-bottom-left-radius: 20px;
+    box-shadow: -5px 0 30px rgba(0, 0, 0, 0.15);
     overflow-y: auto;
     z-index: 10000;
   }
@@ -605,7 +610,7 @@ export default {
     left: 0;
     width: 100%;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.4);
     z-index: 9999;
     opacity: 0;
     animation: fadeIn 0.3s ease forwards;
@@ -617,113 +622,99 @@ export default {
     }
   }
 
+  /* 🎨 LAYOUT COMPACTO E MODERNO */
   .nav-links {
     flex-direction: column;
-    gap: 0;
+    gap: 0.5rem;
     width: 100%;
-    max-width: 320px;
+    max-width: 340px;
     padding: 0;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 0;
-    overflow: hidden;
+    align-items: stretch;
   }
 
   .nav-item {
     width: 100%;
     position: relative;
+    opacity: 0;
+    transform: translateX(30px);
+    animation: slideInFromRight 0.3s ease forwards;
   }
 
-  /* ✅ Separador elegante entre os itens no mobile */
-  .nav-item:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 20%;
-    right: 20%;
-    height: 1px;
-    background: linear-gradient(to right, transparent, rgba(102, 126, 234, 0.2), transparent);
+  /* Animação mais rápida */
+  .nav-menu.active .nav-item:nth-child(1) { animation-delay: 0.05s; }
+  .nav-menu.active .nav-item:nth-child(2) { animation-delay: 0.08s; }
+  .nav-menu.active .nav-item:nth-child(3) { animation-delay: 0.11s; }
+  .nav-menu.active .nav-item:nth-child(4) { animation-delay: 0.14s; }
+  .nav-menu.active .nav-item:nth-child(5) { animation-delay: 0.17s; }
+  .nav-menu.active .nav-item:nth-child(6) { animation-delay: 0.20s; }
+  .nav-menu.active .nav-item:nth-child(7) { animation-delay: 0.23s; }
+
+  @keyframes slideInFromRight {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 
   .nav-link {
     width: 100%;
-    padding: 1.5rem 1.5rem;
-    border-radius: 0;
-    justify-content: center;
+    padding: 0.75rem 1.2rem;
+    border-radius: 12px;
+    justify-content: flex-start;
     color: #2c3e50;
-    background: transparent;
-    border: none;
-    font-size: 1.1rem;
+    background: white;
+    border: 1.5px solid rgba(102, 126, 234, 0.12);
+    font-size: 0.95rem;
     font-weight: 600;
-    letter-spacing: 0.3px;
-    text-align: center;
-    transform: translateY(30px);
-    opacity: 0;
-    transition: all 0.3s ease;
-    box-shadow: none;
-    min-height: 40px;
-    max-height: 40px;
-    display: flex;
-    align-items: center;
+    letter-spacing: 0.2px;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
-    position: relative;
   }
 
-  .nav-menu.active .nav-link {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  .nav-link::before {
-    display: none;
-  }
-
+  /* Estado ativo - simples e elegante */
   .nav-item.active .nav-link {
-    background: rgba(102, 126, 234, 0.15) !important;
+    background: rgba(102, 126, 234, 0.08);
+    border-color: #667eea;
     color: #667eea !important;
+    box-shadow: 0 3px 12px rgba(102, 126, 234, 0.15);
   }
 
-  .nav-item.active .nav-link::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: #667eea;
-  }
-
-  .nav-item:not(.active):not(.whatsapp-item) .nav-link:hover,
+  /* Tap effect */
   .nav-item:not(.active):not(.whatsapp-item) .nav-link:active {
-    background: rgba(102, 126, 234, 0.1) !important;
-    border-color: transparent !important;
-    transform: translateY(0);
-    box-shadow: none;
+    background: rgba(102, 126, 234, 0.05);
+    transform: scale(0.98);
     color: #667eea !important;
+  }
+
+  /* 🎨 WHATSAPP COMPACTO */
+  .whatsapp-item {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1.5px dashed rgba(102, 126, 234, 0.15);
   }
 
   .whatsapp-link {
-    background: transparent !important;
-    border-color: transparent !important;
+    background: rgba(37, 211, 102, 0.08) !important;
+    border: 1.5px solid rgba(37, 211, 102, 0.25) !important;
     color: #25D366 !important;
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.12);
+    justify-content: center;
   }
 
-  .whatsapp-link:hover,
   .whatsapp-link:active {
-    background: rgba(37, 211, 102, 0.1) !important;
-    border-color: transparent !important;
-    color: #128C7E !important;
-    box-shadow: none;
+    background: rgba(37, 211, 102, 0.12) !important;
+    transform: scale(0.98);
+    box-shadow: 0 1px 4px rgba(37, 211, 102, 0.15);
   }
 
-  .whatsapp-link:hover .bi-whatsapp {
-    transform: scale(1.1);
+  .whatsapp-link span::before {
+    display: none;
   }
 
-  .nav-link:active {
-    transform: scale(0.98) !important;
-    transition: transform 0.1s ease;
+  .bi-whatsapp {
+    font-size: 1.2rem;
   }
 }
 
@@ -739,22 +730,20 @@ export default {
   }
 
   .nav-menu {
-    padding: 2.5rem 1rem 2rem;
+    padding: 1.2rem 1rem;
     top: 65px;
-    height: 75vh;
-    max-height: 550px;
+    height: calc(100vh - 65px);
   }
 
   .nav-links {
-    gap: 0;
-    max-width: 320px;
+    max-width: 100%;
+    gap: 0.4rem;
   }
 
   .nav-link {
-    font-size: 1rem;
+    font-size: 0.9rem;
     padding: 0.7rem 1rem;
-    min-height: 36px;
-    max-height: 36px;
+    border-radius: 10px;
   }
 }
 </style>

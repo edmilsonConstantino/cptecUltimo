@@ -192,11 +192,6 @@ export default {
       await this.fetchDeclaracao(this.uniqueLink);
     } else if (this.selectedDeclaracao) {
       this.modulos = this.selectedDeclaracao.modulos || [];
-      console.log("Módulos recebidos no modal:", this.modulos);
-      console.log('📸 Foto recebida no modal:', {
-        nome: this.selectedDeclaracao.nomeCompleto,
-        foto: this.selectedDeclaracao.foto
-      });
     }
   },
   beforeUnmount() {
@@ -223,7 +218,6 @@ export default {
     },
 
     handleImageError(event) {
-      console.log('❌ Erro ao carregar imagem no modal:', event.target.src);
       if (this.selectedDeclaracao && this.selectedDeclaracao.nomeCompleto) {
         event.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.selectedDeclaracao.nomeCompleto)}&background=667eea&color=fff&size=200`;
       } else {
@@ -236,13 +230,8 @@ export default {
         const data = await CertificationsService.getByUniqueLink(uniqueLink);
         this.$emit("update:selectedDeclaracao", data);
         this.modulos = data.modulos || [];
-        console.log("Módulos carregados do backend:", this.modulos);
-        console.log('📸 Foto carregada do backend:', {
-          nome: data.nomeCompleto,
-          foto: data.foto
-        });
       } catch (error) {
-        console.error("Erro ao buscar declaração:", error);
+        // erro tratado: logs removidos
       }
     },
 
@@ -272,11 +261,6 @@ export default {
         document.body.style.overflow = "hidden";
         this.checkMobile();
         this.modulos = newVal.modulos || [];
-        console.log("Módulos atualizados:", this.modulos);
-        console.log('📸 Foto atualizada:', {
-          nome: newVal.nomeCompleto,
-          foto: newVal.foto
-        });
       }
     },
 

@@ -167,7 +167,6 @@ export default {
       });
     },
     handleImageError(event) {
-      console.log('❌ Erro ao carregar imagem:', event.target.src);
       const declaracao = this.declaracoes.find(d => d.foto === event.target.src);
       if (declaracao) {
         event.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(declaracao.nomeCompleto)}&background=3b82f6&color=fff&size=200`;

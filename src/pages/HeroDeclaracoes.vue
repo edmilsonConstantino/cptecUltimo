@@ -495,9 +495,10 @@ export default {
   background: white;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50px;
-  padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+  padding: 0.5rem;
   transition: all 0.3s ease;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  gap: 0.5rem;
 }
 
 .search-input-group:focus-within {
@@ -509,7 +510,8 @@ export default {
 .search-icon {
   color: #999;
   font-size: 1.2rem;
-  margin-right: 1rem;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
 }
 
 .search-input {
@@ -519,7 +521,8 @@ export default {
   font-size: 1rem;
   color: #333;
   outline: none;
-  padding: 0.5rem 0;
+  padding: 0.75rem 0.5rem;
+  min-width: 0;
 }
 
 .search-input::placeholder {
@@ -530,18 +533,33 @@ export default {
   background: linear-gradient(135deg, #3b4cb8, #4e73df);
   color: white;
   border: none;
-  padding: 0.75rem 2rem;
-  border-radius: 50px;
+  padding: 0;
+  border-radius: 50%;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  white-space: nowrap;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .search-button:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(59, 76, 184, 0.6);
+}
+
+.button-text-desktop {
+  display: inline;
+}
+
+.button-icon-mobile {
+  display: none;
 }
 
 .wave-divider {
@@ -968,7 +986,7 @@ export default {
   color: white;
   box-shadow: 0 3px 10px rgba(30, 58, 138, 0.2);
 }
-/* PAGINAÇÃO COM DOTS */
+
 .pagination-dots {
   display: flex;
   align-items: center;
@@ -1004,6 +1022,7 @@ export default {
   border-radius: 10px;
   box-shadow: 0 3px 10px rgba(30, 58, 138, 0.3);
 }
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .hero-background {
@@ -1011,15 +1030,14 @@ export default {
     padding-top: 60px;
   }
 
-
   .carousel-track {
     flex-wrap: nowrap;
     overflow: visible;
     padding: 0;
-    margin-bottom: 20px;          /* controla o espaço aqui */
+    margin-bottom: 20px;
     justify-content: center;
     align-items: flex-start;
-    min-height: auto;             /* remove o min-height fixo */
+    min-height: auto;
     height: auto;
   }
 
@@ -1032,55 +1050,76 @@ export default {
   }
 
   .pagination-dots {
-    margin-top: 5px;             /* espaço bem menor e controlado */
+    margin-top: 5px;
   }
 
   .hero-content {
     padding: 1.5rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero-badge {
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .hero-title {
     font-size: 2rem;
+    text-align: center;
+    width: 100%;
   }
 
   .hero-subtitle {
     font-size: 1rem;
+    text-align: center;
+    width: 100%;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .hero-features {
     gap: 1rem;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
   }
 
   .feature-item {
     font-size: 0.85rem;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
   }
 
- .search-input-group {
-    flex-direction: row;
-    padding: 0.5rem;
-    border-radius: 50px;
+  .search-wrapper-hero {
+    width: 100%;
+    max-width: 90%;
+    margin: 0 auto;
+  }
+
+  .search-input-group {
+    padding: 0.4rem;
   }
 
   .search-icon {
-    margin-left: 0.5rem;
     font-size: 1.1rem;
+    margin-left: 0.5rem;
   }
 
   .search-input {
-    flex: 1;
-    padding: 0.75rem 0.5rem;
     font-size: 0.95rem;
+    padding: 0.6rem 0.5rem;
   }
 
   .search-button {
-    width: 48px;
-    height: 48px;
-    padding: 0;
-    border-radius: 50%;
-    min-width: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    min-height: 46px;
   }
 
   .button-text-desktop {
@@ -1089,10 +1128,8 @@ export default {
 
   .button-icon-mobile {
     display: block;
-    font-size: 1.3rem;
-    font-weight: bold;
+    font-size: 1.2rem;
   }
-
 
   .wave-divider {
     height: 80px;
@@ -1160,6 +1197,29 @@ export default {
   .hero-features {
     flex-direction: column;
     gap: 0.75rem;
+  }
+
+  .search-input-group {
+    padding: 0.35rem;
+  }
+
+  .search-icon {
+    font-size: 1rem;
+  }
+
+  .search-input {
+    font-size: 0.9rem;
+  }
+
+  .search-button {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .button-icon-mobile {
+    font-size: 1.1rem;
   }
 
   .section-title {
